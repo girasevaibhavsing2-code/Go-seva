@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>श्री गो-आश्रम व गौशाळा सेवा पोर्टल</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-amber-50 text-slate-800 min-h-screen flex flex-col font-app">
+
+  <!-- TOP HELPLINE BAR -->
+  <header class="bg-amber-900 text-amber-100 text-sm py-2 px-4 shadow-sm">
+    <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-2">
+      <div class="flex items-center gap-2">
+        <i class="fa-solid fa-phone text-amber-300"></i>
+        <span data-i18n="topHelpline">तातडीची अंत्यसंस्कार व गोसेवा हेल्पलाईन: <strong>+91 98765 43210</strong> (24x7)</span>
+      </div>
+      <div class="flex items-center gap-3">
+        <button id="btnLanguageToggle" onclick="toggleLanguage()" class="bg-amber-950 hover:bg-black text-amber-200 border border-amber-600 text-xs font-bold px-3 py-1 rounded transition flex items-center gap-1.5 shadow-sm">
+          <i class="fa-solid fa-globe text-amber-400"></i>
+          <span id="langDisplayText">English</span>
+        </button>
+        <span data-i18n="regNo" class="hidden sm:inline-block text-xs bg-amber-950/60 px-2 py-1 rounded border border-amber-800">नोंदणी: महा/गौ-सेवा/२०२४</span>
+        <button id="btnTogglePortal" onclick="togglePortalView()" class="bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold px-3 py-1 rounded transition flex items-center gap-1.5 shadow">
+          <i class="fa-solid fa-repeat"></i> <span id="portalToggleText">ॲडमिन डॅशबोर्ड</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- NAVBAR -->
+  <nav id="mainNavbar" class="bg-white border-b border-amber-200 sticky top-0 z-30 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <div class="flex items-center gap-3 cursor-pointer" onclick="switchCustomerTab('home')">
+          <div class="w-10 h-10 rounded-full bg-amber-700 text-white flex items-center justify-center text-xl shadow">
+            <i class="fa-solid fa-cow"></i>
+          </div>
+          <div>
+            <h1 data-i18n="portalTitle" class="text-lg sm:text-xl font-bold text-amber-900 leading-tight">श्री सुरभी गो-आश्रम</h1>
+            <p data-i18n="portalSubtitle" class="text-xs text-amber-700 font-medium">गौ-संवर्धन, सेवा आणि सेंद्रिय उत्पादने</p>
+          </div>
+        </div>
+
+        <div id="customerNavLinks" class="hidden md:flex items-center space-x-2 font-medium text-sm">
+          <button onclick="switchCustomerTab('home')" data-i18n="navHome" class="px-3 py-2 rounded hover:text-amber-800 hover:bg-amber-100 transition">मुख्यपृष्ठ</button>
+          <button onclick="switchCustomerTab('store')" data-i18n="navStore" class="px-3 py-2 rounded hover:text-amber-800 hover:bg-amber-100 transition">गौ-उत्पादने</button>
+          <button onclick="switchCustomerTab('donate')" data-i18n="navDonate" class="px-3 py-2 rounded hover:text-amber-800 hover:bg-amber-100 transition">गौदान व चारा</button>
+          <button onclick="switchCustomerTab('adopt')" data-i18n="navAdopt" class="px-3 py-2 rounded hover:text-amber-800 hover:bg-amber-100 transition">दत्तक / समर्पण</button>
+          <button onclick="openUrgentModal()" data-i18n="navUrgent" class="bg-rose-600 hover:bg-rose-700 text-white px-3 py-1.5 rounded font-semibold text-xs transition shadow flex items-center gap-1.5 animate-pulse">
+            <i class="fa-solid fa-truck-fast"></i> अंत्यविधी गोवऱ्या
+          </button>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <button id="btnCart" onclick="openCartModal()" class="relative bg-amber-100 text-amber-900 px-3 py-2 rounded-lg hover:bg-amber-200 transition flex items-center gap-2 text-sm font-bold">
+            <i class="fa-solid fa-basket-shopping text-base"></i>
+            <span id="cartCountBadge" class="bg-amber-800 text-white text-xs px-2 py-0.5 rounded-full">0</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ================= CUSTOMER PORTAL ================= -->
+  <main id="customerPortal" class="flex-grow">
+    
+    <!-- Tab 1: Home -->
+    <section id="tabHome" class="space-y-10 pb-12">
+      <div class="relative bg-gradient-to-r from-amber-950 via-amber-900 to-amber-800 text-white py-14 px-4">
+        <div class="max-w-4xl mx-auto text-center space-y-4">
+          <span data-i18n="heroMotto" class="inline-block bg-amber-500/20 text-amber-200 border border-amber-400/30 text-xs px-4 py-1 rounded-full font-semibold">
+            गावो विश्वस्य मातरः — गाय ही विश्वाची माता आहे
+          </span>
+          <h2 data-i18n="heroHeading" class="text-3xl sm:text-5xl font-extrabold leading-tight">देशी गोवंशाचे संवर्धन, संरक्षण आणि जनसेवा</h2>
+          <p data-i18n="heroSubtext" class="text-amber-100 text-sm sm:text-base max-w-2xl mx-auto">
+            श्री सुरभी गो-आश्रमात निराधार, वृद्ध व भाकड गोवंशाचा सांभाळ केला जातो. शुद्ध सेंद्रिय उत्पादने खरेदी करा किंवा गोमातेच्या सेवेत देणगी अर्पण करा.
+          </p>
+          <div class="flex flex-wrap justify-center gap-3 pt-3">
+            <button onclick="switchCustomerTab('store')" data-i18n="btnBuyProducts" class="bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold px-5 py-2.5 rounded-lg shadow text-sm transition">
+              <i class="fa-solid fa-bottle-droplet mr-1"></i> उत्पादने खरेदी करा
+            </button>
+            <button onclick="switchCustomerTab('donate')" data-i18n="btnDonateNow" class="bg-white/10 hover:bg-white/20 border border-white/30 text-white font-semibold px-5 py-2.5 rounded-lg text-sm backdrop-blur-sm transition">
+              <i class="fa-solid fa-hand-holding-heart mr-1"></i> गोदान / चारा देणगी
+            </button>
+            <button onclick="openUrgentModal()" data-i18n="btnUrgentFuneral" class="bg-rose-600 hover:bg-rose-500 text-white font-bold px-5 py-2.5 rounded-lg shadow text-sm transition flex items-center gap-2">
+              <i class="fa-solid fa-flame"></i> अंत्यसंस्कार गोवऱ्या सेवा
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Urgent Service Banner -->
+      <div class="max-w-7xl mx-auto px-4">
+        <div class="bg-gradient-to-r from-rose-50 to-amber-50 border-2 border-rose-300 rounded-2xl p-5 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 bg-rose-600 text-white rounded-xl flex items-center justify-center text-2xl shrink-0">
+              <i class="fa-solid fa-fire"></i>
+            </div>
+            <div>
+              <h3 data-i18n="bannerUrgentTitle" class="text-base font-bold text-rose-900">अंत्यविधीसाठी शेणाच्या गोवऱ्यांची तात्काळ सेवा</h3>
+              <p data-i18n="bannerUrgentSub" class="text-sm text-slate-700">
+                अंतिम संस्कारासाठी शुद्ध सुकलेल्या गोवऱ्या थेट स्मशानभूमीत अवघ्या २ तासांत पोहोचवल्या जातात.
+              </p>
+            </div>
+          </div>
+          <button onclick="openUrgentModal()" data-i18n="btnUrgentBook" class="w-full md:w-auto bg-rose-700 hover:bg-rose-800 text-white font-bold px-5 py-2.5 rounded-lg text-sm transition shadow shrink-0">
+            तातडीची मागणी करा
+          </button>
+        </div>
+      </div>
+
+      <!-- Service Highlights -->
+      <div class="max-w-7xl mx-auto px-4 space-y-6">
+        <div class="text-center">
+          <h3 data-i18n="servicesHeading" class="text-2xl font-bold text-amber-950">गौशाळेच्या प्रमुख सेवा</h3>
+          <p data-i18n="servicesSub" class="text-sm text-amber-800">सर्व सेवांचा नफा फक्त आणि फक्त गोवंशाच्या चाऱ्यासाठी वापरला जातो</p>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="bg-white p-5 rounded-xl border border-amber-200 shadow-sm hover:shadow-md transition cursor-pointer" onclick="switchCustomerTab('store')">
+            <div class="w-10 h-10 bg-amber-100 text-amber-800 rounded-lg flex items-center justify-center text-xl mb-3">
+              <i class="fa-solid fa-wine-glass"></i>
+            </div>
+            <h4 data-i18n="card1Title" class="font-bold text-sm text-amber-900">A2 दूध व शुद्ध तूप</h4>
+            <p data-i18n="card1Desc" class="text-xs text-slate-600 mt-1">गीर व खिल्लारी गायींचे वैदिक बिलोना पद्धतीने तयार केलेले शुद्ध तूप.</p>
+          </div>
+          <div class="bg-white p-5 rounded-xl border border-amber-200 shadow-sm hover:shadow-md transition cursor-pointer" onclick="switchCustomerTab('store')">
+            <div class="w-10 h-10 bg-amber-100 text-amber-800 rounded-lg flex items-center justify-center text-xl mb-3">
+              <i class="fa-solid fa-circle-dot"></i>
+            </div>
+            <h4 data-i18n="card2Title" class="font-bold text-sm text-amber-900">शेणाच्या गोवऱ्या व धूपबत्ती</h4>
+            <p data-i18n="card2Desc" class="text-xs text-slate-600 mt-1">यज्ञ, होम-हवन आणि अंत्यविधीसाठी उन्हात वाळवलेल्या पवित्र गोवऱ्या.</p>
+          </div>
+          <div class="bg-white p-5 rounded-xl border border-amber-200 shadow-sm hover:shadow-md transition cursor-pointer" onclick="switchCustomerTab('donate')">
+            <div class="w-10 h-10 bg-amber-100 text-amber-800 rounded-lg flex items-center justify-center text-xl mb-3">
+              <i class="fa-solid fa-seedling"></i>
+            </div>
+            <h4 data-i18n="card3Title" class="font-bold text-sm text-amber-900">चारा व औषध देणगी</h4>
+            <p data-i18n="card3Desc" class="text-xs text-slate-600 mt-1">वाढदिवस, पुण्यतिथी निमित्त गायींना १ दिवसाचा चारा किंवा गोदान करा.</p>
+          </div>
+          <div class="bg-white p-5 rounded-xl border border-amber-200 shadow-sm hover:shadow-md transition cursor-pointer" onclick="switchCustomerTab('adopt')">
+            <div class="w-10 h-10 bg-amber-100 text-amber-800 rounded-lg flex items-center justify-center text-xl mb-3">
+              <i class="fa-solid fa-heart"></i>
+            </div>
+            <h4 data-i18n="card4Title" class="font-bold text-sm text-amber-900">गोवंश दत्तक व समर्पण</h4>
+            <p data-i18n="card4Desc" class="text-xs text-slate-600 mt-1">शेतीसाठी गोवंश हवा असल्यास किंवा असमर्थ असल्यास गोशाळेत दाखल करा.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tab 2: Store -->
+    <section id="tabStore" class="max-w-7xl mx-auto px-4 py-6 hidden space-y-6">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-amber-200 pb-4">
+        <div>
+          <h2 data-i18n="storeTitle" class="text-2xl font-bold text-amber-900">गौ-उत्पादने ई-दुकान</h2>
+          <p data-i18n="storeSubtitle" class="text-xs text-slate-600">शुद्ध, सेंद्रिय आणि १००% नैसर्गिक उत्पादने</p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <button onclick="filterProducts('All')" data-i18n="catAll" class="filter-btn active-filter px-3 py-1.5 text-xs font-semibold rounded-lg border border-amber-300 bg-amber-700 text-white">सर्व</button>
+          <button onclick="filterProducts('Milk_Ghee')" data-i18n="catMilkGhee" class="filter-btn px-3 py-1.5 text-xs font-semibold rounded-lg border border-amber-300 bg-white text-slate-700">दूध व तूप</button>
+          <button onclick="filterProducts('Gaurya_Ritual')" data-i18n="catGaurya" class="filter-btn px-3 py-1.5 text-xs font-semibold rounded-lg border border-amber-300 bg-white text-slate-700">गोवऱ्या व धूप</button>
+          <button onclick="filterProducts('Ark_Fertilizer')" data-i18n="catArk" class="filter-btn px-3 py-1.5 text-xs font-semibold rounded-lg border border-amber-300 bg-white text-slate-700">गोमूत्र अर्क व खत</button>
+        </div>
+      </div>
+      <div id="productsGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5"></div>
+    </section>
+
+    <!-- Tab 3: Donation -->
+    <section id="tabDonate" class="max-w-4xl mx-auto px-4 py-8 hidden space-y-6">
+      <div class="bg-white rounded-2xl p-6 border border-amber-200 shadow-sm">
+        <div class="text-center max-w-xl mx-auto space-y-2 mb-6">
+          <span data-i18n="donationTag" class="text-xs font-bold text-amber-800 bg-amber-100 px-3 py-1 rounded-full uppercase">पुण्य संचय</span>
+          <h2 data-i18n="donationHeading" class="text-2xl font-bold text-amber-950">गोमातेच्या सेवेत योगदान द्या</h2>
+          <p data-i18n="donationSubtext" class="text-xs sm:text-sm text-slate-600">तुमच्या लहानशा देणगीमुळे एका मुक्या जनावराला भरपोट चारा आणि वेळेवर उपचार मिळतील.</p>
+        </div>
+
+        <form id="donationForm" onsubmit="handleDonationSubmit(event)" class="space-y-4">
+          <div>
+            <label data-i18n="lblSelectCause" class="block text-xs font-semibold text-slate-700 mb-2">देणगीचा उद्देश निवडा *</label>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+              <label class="border border-amber-300 rounded-lg p-3 text-center cursor-pointer hover:bg-amber-50 has-[:checked]:bg-amber-700 has-[:checked]:text-white transition">
+                <input type="radio" name="cause" value="चारा देणगी (१ दिवस)" class="hidden" checked>
+                <div data-i18n="cause1" class="font-bold">१ दिवसाचा चारा</div>
+                <div class="text-[11px] opacity-80">₹ ५००</div>
+              </label>
+              <label class="border border-amber-300 rounded-lg p-3 text-center cursor-pointer hover:bg-amber-50 has-[:checked]:bg-amber-700 has-[:checked]:text-white transition">
+                <input type="radio" name="cause" value="आजारी गोवंश उपचार" class="hidden">
+                <div data-i18n="cause2" class="font-bold">वैद्यकीय उपचार</div>
+                <div class="text-[11px] opacity-80">₹ १,१००</div>
+              </label>
+              <label class="border border-amber-300 rounded-lg p-3 text-center cursor-pointer hover:bg-amber-50 has-[:checked]:bg-amber-700 has-[:checked]:text-white transition">
+                <input type="radio" name="cause" value="गाय दत्तक (१ महिना)" class="hidden">
+                <div data-i18n="cause3" class="font-bold">गाय दत्तक (१ महिना)</div>
+                <div class="text-[11px] opacity-80">₹ ३,०००</div>
+              </label>
+              <label class="border border-amber-300 rounded-lg p-3 text-center cursor-pointer hover:bg-amber-50 has-[:checked]:bg-amber-700 has-[:checked]:text-white transition">
+                <input type="radio" name="cause" value="ऐच्छिक गोसेवा निधी" class="hidden">
+                <div data-i18n="cause4" class="font-bold">ऐच्छिक निधी</div>
+                <div class="text-[11px] opacity-80">स्वेच्छेने</div>
+              </label>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label data-i18n="lblAmount" class="block text-xs font-semibold text-slate-700 mb-1">देणगी रक्कम (₹) *</label>
+              <input type="text" id="donorAmount" required oninput="enforcePositiveNumber(this)" value="500" class="w-full border border-amber-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-amber-500">
+            </div>
+            <div>
+              <label data-i18n="lblFullName" class="block text-xs font-semibold text-slate-700 mb-1">देणगीदाराचे पूर्ण नाव *</label>
+              <input type="text" id="donorName" required oninput="enforceOnlyLetters(this)" placeholder="उदा. अमोल पाटील" class="w-full border border-amber-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-amber-500">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label data-i18n="lblPhone" class="block text-xs font-semibold text-slate-700 mb-1">मोबाईल नंबर *</label>
+              <input type="tel" id="donorPhone" required maxlength="10" oninput="enforceNumericPhone(this)" pattern="[0-9]{10}" placeholder="10 अंकी मोबाईल नंबर" class="w-full border border-amber-300 rounded-lg px-3 py-2 text-sm outline-none">
+            </div>
+            <div>
+              <label data-i18n="lblCity" class="block text-xs font-semibold text-slate-700 mb-1">पत्ता / गाव</label>
+              <input type="text" id="donorAddress" placeholder="गाव / शहर" class="w-full border border-amber-300 rounded-lg px-3 py-2 text-sm outline-none">
+            </div>
+          </div>
+
+          <div class="p-4 bg-amber-50 rounded-xl border border-amber-200 flex items-center justify-between flex-wrap gap-3">
+            <div>
+              <p data-i18n="lblPaymentMode" class="text-xs font-bold text-amber-950">सुरक्षित ऑनलाईन पेमेंट (UPI / QR / Net Banking)</p>
+              <p data-i18n="lblPaymentSub" class="text-xs text-slate-600">पेमेंट पूर्ण होताच अधिकृत देणगी पावती डाऊनलोड करता येईल.</p>
+            </div>
+            <button type="submit" data-i18n="btnSubmitDonate" class="w-full sm:w-auto bg-amber-700 hover:bg-amber-800 text-white font-bold px-5 py-2 rounded-lg text-sm transition shadow">
+              देणगी अर्पण करा & पावती मिळवा
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- Tab 4: Adoption & Surrender -->
+    <section id="tabAdopt" class="max-w-5xl mx-auto px-4 py-8 hidden space-y-6">
+      <div class="text-center max-w-xl mx-auto space-y-1">
+        <h2 data-i18n="adoptHeader" class="text-2xl font-bold text-amber-950">गोवंश दत्तक व समर्पण कक्ष</h2>
+        <p data-i18n="adoptSub" class="text-xs sm:text-sm text-slate-600">शेतकऱ्यांसाठी गोवंश मागणी आणि अडचणीतील जनावरांना आश्रमात दाखल करण्याची सुविधा</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-white p-5 rounded-2xl border border-amber-200 shadow-sm flex flex-col justify-between">
+          <div class="space-y-3">
+            <div class="flex items-center gap-2 text-amber-800 border-b border-amber-100 pb-2">
+              <i class="fa-solid fa-hand-holding-heart text-xl"></i>
+              <h3 data-i18n="adoptFormTitle" class="font-bold text-base text-slate-900">गोवंश दत्तक घ्या (पालनासाठी)</h3>
+            </div>
+            <p data-i18n="adoptFormDesc" class="text-xs text-slate-600">
+              जर तुम्ही शेतकरी किंवा गो-पालक असाल आणि तुम्हाला शेतीसाठी बैल किंवा दुधासाठी देशी गाय हवी असल्यास अर्ज करा.
+            </p>
+            <form id="adoptForm" onsubmit="handleCattleRequest(event, 'Adopt')" class="space-y-3">
+              <div>
+                <label data-i18n="lblFullName" class="block text-xs font-semibold text-slate-700 mb-1">तुमचे नाव *</label>
+                <input type="text" name="name" required oninput="enforceOnlyLetters(this)" class="w-full border border-amber-300 rounded px-3 py-1.5 text-xs outline-none">
+              </div>
+              <div>
+                <label data-i18n="lblPhone" class="block text-xs font-semibold text-slate-700 mb-1">मोबाईल नंबर *</label>
+                <input type="tel" name="phone" required maxlength="10" oninput="enforceNumericPhone(this)" pattern="[0-9]{10}" class="w-full border border-amber-300 rounded px-3 py-1.5 text-xs outline-none">
+              </div>
+              <div>
+                <label data-i18n="lblSelectAnimal" class="block text-xs font-semibold text-slate-700 mb-1">हवे असलेले जनावर निवडा *</label>
+                <select name="cattleType" class="w-full border border-amber-300 rounded px-3 py-1.5 text-xs outline-none bg-white">
+                  <option value="देशी गाय (Gir/Sahiwal)">देशी गाय (गीर / साहिवाल)</option>
+                  <option value="शेतीसाठी बैल (Khillari/Dangi)">शेतीसाठी बैल (खिल्लारी / डांगी)</option>
+                  <option value="वासरू">वासरू</option>
+                </select>
+              </div>
+              <div>
+                <label data-i18n="lblFarmDetails" class="block text-xs font-semibold text-slate-700 mb-1">पत्ता व शेतीचा तपशील *</label>
+                <textarea name="details" rows="2" required class="w-full border border-amber-300 rounded px-3 py-1.5 text-xs outline-none"></textarea>
+              </div>
+              <button type="submit" data-i18n="btnSubmitAdopt" class="w-full bg-amber-700 hover:bg-amber-800 text-white font-bold py-2 rounded text-xs transition">
+                दत्तक घेण्यासाठी अर्ज पाठवा
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <div class="bg-white p-5 rounded-2xl border border-rose-200 shadow-sm flex flex-col justify-between">
+          <div class="space-y-3">
+            <div class="flex items-center gap-2 text-rose-700 border-b border-rose-100 pb-2">
+              <i class="fa-solid fa-shield-halved text-xl"></i>
+              <h3 data-i18n="surrenderFormTitle" class="font-bold text-base text-slate-900">जनावर गोशाळेत सोडा (समर्पण)</h3>
+            </div>
+            <p data-i18n="surrenderFormDesc" class="text-xs text-slate-600">
+              अपघातात जखमी, वृद्ध, भाकड किंवा सांभाळणे अशक्य झालेले जनावर गोशाळेच्या आश्रयाला सोडण्यासाठी अर्ज करा.
+            </p>
+            <form id="surrenderForm" onsubmit="handleCattleRequest(event, 'Surrender')" class="space-y-3">
+              <div>
+                <label data-i18n="lblOwnerName" class="block text-xs font-semibold text-slate-700 mb-1">मालकाचे नाव *</label>
+                <input type="text" name="name" required oninput="enforceOnlyLetters(this)" class="w-full border border-rose-300 rounded px-3 py-1.5 text-xs outline-none">
+              </div>
+              <div>
+                <label data-i18n="lblPhone" class="block text-xs font-semibold text-slate-700 mb-1">मोबाईल नंबर *</label>
+                <input type="tel" name="phone" required maxlength="10" oninput="enforceNumericPhone(this)" pattern="[0-9]{10}" class="w-full border border-rose-300 rounded px-3 py-1.5 text-xs outline-none">
+              </div>
+              <div>
+                <label data-i18n="lblAnimalAge" class="block text-xs font-semibold text-slate-700 mb-1">जनावराचा प्रकार व वय *</label>
+                <input type="text" name="cattleType" placeholder="उदा. वृद्ध गाय (वय १२ वर्षे)" required class="w-full border border-rose-300 rounded px-3 py-1.5 text-xs outline-none">
+              </div>
+              <div>
+                <label data-i18n="lblReasonHealth" class="block text-xs font-semibold text-slate-700 mb-1">सोडण्याचे कारण व आरोग्य स्थिती *</label>
+                <textarea name="details" rows="2" placeholder="आरोग्य व देखभालीची अडचण" required class="w-full border border-rose-300 rounded px-3 py-1.5 text-xs outline-none"></textarea>
+              </div>
+              <button type="submit" data-i18n="btnSubmitSurrender" class="w-full bg-rose-700 hover:bg-rose-800 text-white font-bold py-2 rounded text-xs transition">
+                गोशाळेत सोडण्यासाठी नोंदवा
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ================= ADMIN DASHBOARD ================= -->
+  <section id="adminPortal" class="flex-grow hidden max-w-7xl mx-auto w-full px-4 py-6 space-y-6">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-white p-5 rounded-2xl border border-amber-200 shadow-sm">
+      <div>
+        <h2 data-i18n="adminHeading" class="text-xl font-bold text-amber-950 flex items-center gap-2">
+          <i class="fa-solid fa-gauge text-amber-700"></i> गौशाळा मालक व व्यवस्थापक डॅशबोर्ड
+        </h2>
+        <p data-i18n="adminSub" class="text-xs text-slate-600">ऑर्डर्स, देणग्या, तातडीची सेवा आणि गोवंश नोंदवहीचे थेट व्यवस्थापन</p>
+      </div>
+      <button onclick="resetMockData()" data-i18n="btnResetData" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-3 py-1.5 rounded-lg border border-slate-300 transition">
+        <i class="fa-solid fa-rotate-right mr-1"></i> डेटा रिसेट
+      </button>
+    </div>
+
+    <!-- KPIs -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
+      <div class="bg-white p-4 rounded-xl border border-amber-200 shadow-sm">
+        <span data-i18n="kpiDonations" class="font-semibold text-amber-700 block mb-1">एकूण जमा देणग्या</span>
+        <div id="statTotalDonations" class="text-xl font-bold text-slate-900">₹ 0</div>
+      </div>
+      <div class="bg-white p-4 rounded-xl border border-amber-200 shadow-sm">
+        <span data-i18n="kpiOrders" class="font-semibold text-blue-700 block mb-1">उत्पादन ऑर्डर्स</span>
+        <div id="statTotalOrders" class="text-xl font-bold text-slate-900">0</div>
+      </div>
+      <div class="bg-white p-4 rounded-xl border-2 border-rose-300 bg-rose-50/50 shadow-sm">
+        <span data-i18n="kpiUrgent" class="font-semibold text-rose-700 block mb-1">अंत्यविधी मागण्या</span>
+        <div id="statUrgentOrders" class="text-xl font-bold text-rose-900">0</div>
+      </div>
+      <div class="bg-white p-4 rounded-xl border border-amber-200 shadow-sm">
+        <span data-i18n="kpiCattle" class="font-semibold text-amber-800 block mb-1">एकूण गोवंश</span>
+        <div id="statTotalCattle" class="text-xl font-bold text-slate-900">0</div>
+      </div>
+    </div>
+
+    <!-- Admin Subtabs -->
+    <div class="border-b border-amber-200 flex gap-2 overflow-x-auto pb-1 text-xs font-bold">
+      <button onclick="switchAdminTab('orders')" id="btnAdminTabOrders" data-i18n="tabAdminOrders" class="admin-tab active-admin-tab px-4 py-2 rounded-t-lg bg-amber-700 text-white flex items-center gap-1.5">
+        <i class="fa-solid fa-cart-flatbed"></i> ऑर्डर्स व इमर्जन्सी
+      </button>
+      <button onclick="switchAdminTab('donations')" id="btnAdminTabDonations" data-i18n="tabAdminDonations" class="admin-tab px-4 py-2 rounded-t-lg bg-white text-slate-700 border border-b-0 border-amber-200 flex items-center gap-1.5">
+        <i class="fa-solid fa-receipt"></i> देणगी वही
+      </button>
+      <button onclick="switchAdminTab('requests')" id="btnAdminTabRequests" data-i18n="tabAdminRequests" class="admin-tab px-4 py-2 rounded-t-lg bg-white text-slate-700 border border-b-0 border-amber-200 flex items-center gap-1.5">
+        <i class="fa-solid fa-clipboard-question"></i> दत्तक व समर्पण
+      </button>
+      <button onclick="switchAdminTab('cattle')" id="btnAdminTabCattle" data-i18n="tabAdminCattle" class="admin-tab px-4 py-2 rounded-t-lg bg-white text-slate-700 border border-b-0 border-amber-200 flex items-center gap-1.5">
+        <i class="fa-solid fa-notes-medical"></i> गोवंश नोंदवही
+      </button>
+      <button onclick="switchAdminTab('inventory')" id="btnAdminTabInventory" data-i18n="tabAdminInventory" class="admin-tab px-4 py-2 rounded-t-lg bg-white text-slate-700 border border-b-0 border-amber-200 flex items-center gap-1.5">
+        <i class="fa-solid fa-warehouse"></i> उत्पादन साठा
+      </button>
+    </div>
+
+    <!-- Table 1: Orders -->
+    <div id="adminTabOrders" class="admin-subview bg-white p-4 rounded-xl border border-amber-200 shadow-sm space-y-4">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr class="bg-amber-100 text-amber-900 border-b border-amber-200">
+              <th data-i18n="thOrderId" class="p-2.5">ऑर्डर ID व वेळ</th>
+              <th data-i18n="thCustomer" class="p-2.5">ग्राहक व पत्ता</th>
+              <th data-i18n="thType" class="p-2.5">प्रकार</th>
+              <th data-i18n="thDetails" class="p-2.5">मागणी तपशील</th>
+              <th data-i18n="thAmount" class="p-2.5">रक्कम</th>
+              <th data-i18n="thStatus" class="p-2.5">सद्यस्थिती</th>
+              <th data-i18n="thAction" class="p-2.5 text-right">कृती</th>
+            </tr>
+          </thead>
+          <tbody id="adminOrdersTableBody" class="divide-y divide-amber-100"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Table 2: Donations -->
+    <div id="adminTabDonations" class="admin-subview hidden bg-white p-4 rounded-xl border border-amber-200 shadow-sm space-y-4">
+      <div class="flex justify-between items-center">
+        <h3 data-i18n="donationsLedgerHeading" class="font-bold text-amber-950 text-sm">देणगी वही (Donations Ledger)</h3>
+        <button onclick="exportDonationsCSV()" data-i18n="btnExportCsv" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-3 py-1.5 rounded transition">
+          <i class="fa-solid fa-file-excel mr-1"></i> CSV डाऊनलोड
+        </button>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr class="bg-amber-100 text-amber-900 border-b border-amber-200">
+              <th data-i18n="thReceiptNo" class="p-2.5">पावती क्र.</th>
+              <th data-i18n="thDonor" class="p-2.5">देणगीदार</th>
+              <th data-i18n="thPhone" class="p-2.5">मोबाईल</th>
+              <th data-i18n="thCause" class="p-2.5">उद्देश</th>
+              <th data-i18n="thAmount" class="p-2.5">रक्कम</th>
+              <th data-i18n="thDate" class="p-2.5">दिनांक</th>
+              <th data-i18n="thPrintReceipt" class="p-2.5 text-right">पावती</th>
+            </tr>
+          </thead>
+          <tbody id="adminDonationsTableBody" class="divide-y divide-amber-100"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Table 3: Requests -->
+    <div id="adminTabRequests" class="admin-subview hidden bg-white p-4 rounded-xl border border-amber-200 shadow-sm space-y-4">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr class="bg-amber-100 text-amber-900 border-b border-amber-200">
+              <th data-i18n="thDate" class="p-2.5">तारीख</th>
+              <th data-i18n="thType" class="p-2.5">प्रकार</th>
+              <th data-i18n="thApplicant" class="p-2.5">अर्जदार व मोबाईल</th>
+              <th data-i18n="thAnimal" class="p-2.5">जनावर तपशील</th>
+              <th data-i18n="thDetails" class="p-2.5">तपशील व कारण</th>
+              <th data-i18n="thStatus" class="p-2.5">स्थिती</th>
+              <th data-i18n="thDecision" class="p-2.5 text-right">निर्णय</th>
+            </tr>
+          </thead>
+          <tbody id="adminRequestsTableBody" class="divide-y divide-amber-100"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Table 4: Cattle -->
+    <div id="adminTabCattle" class="admin-subview hidden bg-white p-4 rounded-xl border border-amber-200 shadow-sm space-y-4">
+      <div class="flex justify-between items-center">
+        <h3 data-i18n="cattleHeading" class="font-bold text-amber-950 text-sm">आश्रमातील गोवंश नोंदवही</h3>
+        <button onclick="openAddCattleModal()" data-i18n="btnAddNewCattle" class="text-xs bg-amber-700 hover:bg-amber-800 text-white font-medium px-3 py-1.5 rounded transition">
+          <i class="fa-solid fa-plus mr-1"></i> नवीन गोवंश नोंदवा
+        </button>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr class="bg-amber-100 text-amber-900 border-b border-amber-200">
+              <th data-i18n="thTagId" class="p-2.5">टॅग क्र.</th>
+              <th data-i18n="thName" class="p-2.5">नाव</th>
+              <th data-i18n="thBreed" class="p-2.5">जात</th>
+              <th data-i18n="thAgeType" class="p-2.5">वय / प्रकार</th>
+              <th data-i18n="thHealth" class="p-2.5">आरोग्य स्थिती</th>
+              <th data-i18n="thAdoptStatus" class="p-2.5">दत्तक स्थिती</th>
+              <th data-i18n="thAction" class="p-2.5 text-right">कृती</th>
+            </tr>
+          </thead>
+          <tbody id="adminCattleTableBody" class="divide-y divide-amber-100"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Table 5: Inventory -->
+    <div id="adminTabInventory" class="admin-subview hidden bg-white p-4 rounded-xl border border-amber-200 shadow-sm space-y-4">
+      <div class="flex justify-between items-center flex-wrap gap-2">
+        <h3 data-i18n="tabAdminInventory" class="font-bold text-amber-950 text-sm">उत्पादन साठा व दर व्यवस्थापक</h3>
+        <button onclick="openAddProductModal()" class="text-xs bg-amber-700 hover:bg-amber-800 text-white font-bold px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 shadow">
+          <i class="fa-solid fa-plus"></i> नवीन उत्पादन जोडा (Add Product)
+        </button>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr class="bg-amber-100 text-amber-900 border-b border-amber-200">
+              <th class="p-2.5">उत्पादन नाव</th>
+              <th class="p-2.5">श्रेणी (Category)</th>
+              <th class="p-2.5">दर (₹)</th>
+              <th class="p-2.5">शिल्लक साठा (मॅन्युअली टाका)</th>
+              <th class="p-2.5 text-right">कृती (Action)</th>
+            </tr>
+          </thead>
+          <tbody id="adminInventoryTableBody" class="divide-y divide-amber-100"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= MODALS ================= -->
+
+  <!-- Urgent Funeral Modal -->
+  <div id="urgentModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 border-2 border-rose-500 shadow-2xl relative text-xs">
+      <button onclick="closeUrgentModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <div class="flex items-center gap-3 text-rose-700 mb-3">
+        <i class="fa-solid fa-truck-medical text-2xl"></i>
+        <h3 data-i18n="modalUrgentTitle" class="font-bold text-base text-slate-900">अंत्यविधी गोवऱ्या - तात्काळ ऑर्डर</h3>
+      </div>
+      <form id="urgentForm" onsubmit="handleUrgentOrderSubmit(event)" class="space-y-3">
+        <div>
+          <label data-i18n="lblContactPerson" class="block font-semibold text-slate-700 mb-1">संपर्क व्यक्तीचे नाव *</label>
+          <input type="text" id="urgName" required oninput="enforceOnlyLetters(this)" class="w-full border border-rose-300 rounded px-3 py-1.5 outline-none">
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label data-i18n="lblActivePhone" class="block font-semibold text-slate-700 mb-1">मोबाईल नंबर *</label>
+            <input type="tel" id="urgPhone" required maxlength="10" oninput="enforceNumericPhone(this)" pattern="[0-9]{10}" placeholder="10 अंकी नंबर" class="w-full border border-rose-300 rounded px-3 py-1.5 outline-none">
+          </div>
+          <div>
+            <label data-i18n="lblQuantity" class="block font-semibold text-slate-700 mb-1">गोवऱ्यांचे प्रमाण *</label>
+            <select id="urgQuantity" class="w-full border border-rose-300 rounded px-3 py-1.5 outline-none bg-white">
+              <option value="१ पोते (१०० गोवऱ्या) - ₹ ५००">१ पोते (१०० गोवऱ्या) - ₹ ५००</option>
+              <option value="२ पोती (२०० गोवऱ्या) - ₹ ९५०">२ पोती (२०० गोवऱ्या) - ₹ ९५०</option>
+              <option value="३ पोती (पूर्ण विधी किटसह) - ₹ १,४००">३ पोती + विधी किट - ₹ १,४००</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label data-i18n="lblCremationAddress" class="block font-semibold text-slate-700 mb-1">स्मशानभूमीचा पत्ता / परिसर *</label>
+          <textarea id="urgAddress" rows="2" required class="w-full border border-rose-300 rounded px-3 py-1.5 outline-none"></textarea>
+        </div>
+        <button type="submit" data-i18n="btnSendUrgent" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-2.5 rounded-lg transition shadow text-xs">
+          तातडीने पाठवा
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Cart Modal -->
+  <div id="cartModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 border border-amber-200 shadow-2xl relative flex flex-col max-h-[85vh] text-xs">
+      <div class="flex justify-between items-center border-b border-amber-200 pb-3">
+        <h3 data-i18n="cartTitle" class="font-bold text-amber-950 flex items-center gap-2 text-sm">
+          <i class="fa-solid fa-basket-shopping text-amber-700"></i> खरेदी सूची (Shopping Cart)
+        </h3>
+        <button onclick="closeCartModal()" class="text-slate-400 hover:text-slate-700 text-lg">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div id="cartItemsContainer" class="flex-grow overflow-y-auto py-3 divide-y divide-amber-100"></div>
+      <div class="border-t border-amber-200 pt-3 space-y-3">
+        <div class="flex justify-between font-bold text-sm text-slate-800">
+          <span data-i18n="lblGrandTotal">एकूण रक्कम:</span>
+          <span id="cartGrandTotal" class="text-amber-800 font-extrabold">₹ 0</span>
+        </div>
+        <form id="checkoutForm" onsubmit="handleCartCheckout(event)" class="space-y-2.5">
+          <div class="grid grid-cols-2 gap-2">
+            <input type="text" id="custName" placeholder="Name *" required oninput="enforceOnlyLetters(this)" class="border border-amber-300 rounded px-3 py-1.5 outline-none">
+            <input type="tel" id="custPhone" placeholder="Phone *" pattern="[0-9]{10}" required maxlength="10" oninput="enforceNumericPhone(this)" class="border border-amber-300 rounded px-3 py-1.5 outline-none">
+          </div>
+          <input type="text" id="custAddress" placeholder="Delivery Address *" required class="w-full border border-amber-300 rounded px-3 py-1.5 outline-none">
+          <button type="submit" data-i18n="btnConfirmOrder" class="w-full bg-amber-700 hover:bg-amber-800 text-white font-bold py-2.5 rounded-lg transition text-xs">
+            ऑर्डर निश्चित करा
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Product Modal -->
+  <div id="addProductModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl max-w-md w-full p-5 border border-amber-200 shadow-2xl relative text-xs">
+      <div class="flex justify-between items-center border-b border-amber-200 pb-2 mb-3">
+        <h3 class="font-bold text-sm text-amber-950">नवीन उत्पादन जोडा</h3>
+        <button type="button" onclick="closeAddProductModal()" class="text-slate-400 hover:text-slate-700 text-base" aria-label="बंद करा">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <form id="addProductForm" onsubmit="handleAddNewProduct(event)" class="space-y-3">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div>
+            <label for="newProdNameMr" class="block font-semibold text-slate-700 mb-1">उत्पादन नाव *</label>
+            <input type="text" id="newProdNameMr" required class="w-full border border-amber-300 rounded px-3 py-1.5 outline-none">
+          </div>
+          <div>
+            <label for="newProdNameEn" class="block font-semibold text-slate-700 mb-1">Product Name *</label>
+            <input type="text" id="newProdNameEn" required class="w-full border border-amber-300 rounded px-3 py-1.5 outline-none">
+          </div>
+        </div>
+        <div>
+          <label for="newProdCategory" class="block font-semibold text-slate-700 mb-1">श्रेणी *</label>
+          <select id="newProdCategory" required class="w-full border border-amber-300 rounded px-3 py-1.5 outline-none bg-white">
+            <option value="Milk_Ghee">दूध व तूप</option>
+            <option value="Gaurya_Ritual">गोवऱ्या व धूप</option>
+            <option value="Ark_Fertilizer">गोमूत्र अर्क व खत</option>
+          </select>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          <div>
+            <label for="newProdPrice" class="block font-semibold text-slate-700 mb-1">दर (₹) *</label>
+            <input type="text" id="newProdPrice" required oninput="enforcePositiveNumber(this)" placeholder="दर" class="w-full border border-amber-300 rounded px-3 py-1.5 outline-none">
+          </div>
+          <div>
+            <label for="newProdStock" class="block font-semibold text-slate-700 mb-1">साठा *</label>
+            <input type="text" id="newProdStock" required oninput="enforcePositiveNumber(this)" value="10" class="w-full border border-amber-300 rounded px-3 py-1.5 outline-none">
+          </div>
+          <div>
+            <label for="newProdUnit" class="block font-semibold text-slate-700 mb-1">युनिट *</label>
+            <input type="text" id="newProdUnit" required placeholder="१ नग" class="w-full border border-amber-300 rounded px-3 py-1.5 outline-none">
+          </div>
+        </div>
+        <div>
+          <label for="newProdDesc" class="block font-semibold text-slate-700 mb-1">वर्णन</label>
+          <textarea id="newProdDesc" rows="2" class="w-full border border-amber-300 rounded px-3 py-1.5 outline-none"></textarea>
+        </div>
+        <button type="submit" class="w-full bg-amber-700 hover:bg-amber-800 text-white font-bold py-2 rounded-lg transition">
+          उत्पादन जतन करा
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Receipt Modal -->
+  <div id="receiptModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-xl max-w-sm w-full p-5 border border-amber-300 shadow-2xl relative text-xs">
+      <div id="receiptPrintArea" class="p-4 border-2 border-dashed border-amber-400 rounded-lg space-y-2 bg-amber-50/40">
+        <div class="text-center border-b border-amber-300 pb-2">
+          <h4 data-i18n="receiptTrustName" class="font-bold text-base text-amber-900">श्री सुरभी गो-आश्रम ट्रस्ट</h4>
+          <p class="text-[10px] text-slate-600">Reg. No. MH/GAU/2024 | Pune, Maharashtra</p>
+          <span data-i18n="receiptTitle" class="inline-block bg-amber-700 text-white text-[9px] px-2 py-0.5 rounded font-bold mt-1">अधिकृत देणगी पावती</span>
+        </div>
+        <div class="space-y-1.5 text-slate-800 text-xs">
+          <div class="flex justify-between"><span class="text-slate-500">पावती क्र:</span><span id="recNo" class="font-bold"></span></div>
+          <div class="flex justify-between"><span class="text-slate-500">दिनांक:</span><span id="recDate"></span></div>
+          <div class="flex justify-between"><span class="text-slate-500">देणगीदार:</span><span id="recName" class="font-bold"></span></div>
+          <div class="flex justify-between"><span class="text-slate-500">मोबाईल:</span><span id="recPhone"></span></div>
+          <div class="flex justify-between"><span class="text-slate-500">उद्देश:</span><span id="recCause" class="font-semibold text-amber-900"></span></div>
+          <div class="flex justify-between border-t border-amber-300 pt-1.5 font-bold">
+            <span data-i18n="lblReceivedAmount">प्राप्त रक्कम:</span><span id="recAmount" class="text-emerald-700 text-sm"></span>
+          </div>
+        </div>
+      </div>
+      <div class="flex gap-2 mt-4">
+        <button onclick="window.print()" data-i18n="btnPrintPdf" class="flex-1 bg-amber-700 hover:bg-amber-800 text-white font-bold py-2 rounded text-xs">
+          <i class="fa-solid fa-print mr-1"></i> प्रिंट / Save PDF
+        </button>
+        <button onclick="closeReceiptModal()" data-i18n="btnClose" class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-semibold px-4 py-2 rounded text-xs">
+          बंद करा
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Cattle Modal -->
+  <div id="cattleModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-5 border border-amber-200 shadow-2xl relative text-xs">
+      <div class="flex justify-between items-center border-b border-amber-200 pb-2 mb-3">
+        <h3 data-i18n="modalAddCattleTitle" class="font-bold text-sm text-amber-950">नवीन गोवंश नोंदणी</h3>
+        <button onclick="closeCattleModal()" class="text-slate-400 hover:text-slate-700 text-base">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <form id="addCattleForm" onsubmit="handleAddCattleSubmit(event)" class="space-y-3">
+        <div>
+          <label data-i18n="lblTagId" class="block font-semibold text-slate-700 mb-1">टॅग क्रमांक (Tag ID) *</label>
+          <input type="text" id="catTag" placeholder="GAU-109" required class="w-full border border-amber-300 rounded px-3 py-1.5 outline-none">
+        </div>
+        <div>
+          <label data-i18n="lblAnimalName" class="block font-semibold text-slate-700 mb-1">नाव / ओळख *</label>
+          <input type="text" id="catName" placeholder="नाव" required class="w-full border border-amber-300 rounded px-3 py-1.5 outline-none">
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label data-i18n="thBreed" class="block font-semibold text-slate-700 mb-1">जात *</label>
+            <select id="catBreed" class="w-full border border-amber-300 rounded px-3 py-1.5 outline-none bg-white">
+              <option value="गीर (Gir)">गीर</option>
+              <option value="खिल्लारी (Khillari)">खिल्लारी</option>
+              <option value="साहिवाल (Sahiwal)">साहिवाल</option>
+              <option value="डांगी (Dangi)">डांगी</option>
+            </select>
+          </div>
+          <div>
+            <label data-i18n="thAgeType" class="block font-semibold text-slate-700 mb-1">वय *</label>
+            <input type="text" id="catAge" placeholder="उदा. ४ वर्षे" required class="w-full border border-amber-300 rounded px-3 py-1.5 outline-none">
+          </div>
+        </div>
+        <div>
+          <label data-i18n="thHealth" class="block font-semibold text-slate-700 mb-1">आरोग्य स्थिती *</label>
+          <input type="text" id="catHealth" placeholder="उत्तम / उपचाराधीन" required class="w-full border border-amber-300 rounded px-3 py-1.5 outline-none">
+        </div>
+        <button type="submit" data-i18n="btnSaveCattle" class="w-full bg-amber-700 hover:bg-amber-800 text-white font-bold py-2 rounded-lg transition mt-2">
+          नोंदवहीत जतन करा
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
